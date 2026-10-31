@@ -1,0 +1,8 @@
+.netlify/
+.wrangler/
+node_modules/
+.env
+.env.*
+*.log
+*.zip
+.DS_Store

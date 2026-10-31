@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="theme-color" content="#0c0a08">
+  <title>পণ্য ব্যবস্থাপনা · Style Grid</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&family=Noto+Serif+Bengali:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/admin.css">
+  <script src="assets/api-config.js"></script>
+  <script src="assets/admin.js" defer></script>
+</head>
+<body>
+  <main class="login-view" id="loginView" hidden>
+    <section class="login-card" aria-labelledby="screenHeading">
+      <a class="brand login-brand" href="/" aria-label="Style Grid public catalog"><span class="brand-mark" aria-hidden="true">SG</span><span>Style Grid</span></a>
+      <div id="loginHeadingSlot"><h1 id="screenHeading">পণ্য ব্যবস্থাপনা</h1></div>
+      <p class="muted login-intro">ক্যাটালগ সম্পাদনা করতে আপনার অ্যাকাউন্টে সাইন ইন করুন।</p>
+      <form id="loginForm" autocomplete="on">
+        <label for="loginEmail">ইমেইল</label>
+        <input id="loginEmail" name="email" type="email" autocomplete="username" value="" required>
+        <label for="loginPassword">পাসওয়ার্ড</label>
+        <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
+        <button class="button primary login-submit" id="loginSubmit" type="submit">সাইন ইন</button>
+        <p class="feedback" id="loginFeedback" role="status" aria-live="polite"></p>
+      </form>
+      <a class="quiet-link" href="/">পাবলিক ক্যাটালগে ফিরুন</a>
+    </section>
+  </main>
+
+  <div class="app-shell" id="appShell" hidden>
+    <aside class="sidebar" id="sidebar" aria-label="প্রধান নেভিগেশন">
+      <a class='brand' href='/admin'><span class="brand-mark" aria-hidden="true">SG</span><span>Style Grid</span></a>
+      <p class="nav-heading">ক্যাটালগ</p>
+      <nav class="nav-list">
+        <a aria-current='page' class='nav-link active' href='/admin'>পণ্য তালিকা</a>
+        <a class="nav-link" href="/" target="_blank" rel="noopener noreferrer">পাবলিক সাইট</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <p class="account-label">সাইন ইন করা আছে</p>
+        <p class="account-email" id="accountEmail"></p>
+        <button class="button quiet logout-button" id="logoutButton" type="button">সেশন শেষ করুন</button>
+      </div>
+    </aside>
+    <button class="nav-scrim" id="navScrim" type="button" aria-label="নেভিগেশন বন্ধ করুন" hidden></button>
+
+    <div class="main-column">
+      <header class="topbar">
+        <button class="button quiet menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="sidebar">মেনু</button>
+        <span class="topbar-title">Style Grid <span class="muted">/</span> পণ্য</span>
+        <a class="topbar-link" href="/" target="_blank" rel="noopener noreferrer">সাইট দেখুন</a>
+      </header>
+
+      <section class="workspace" aria-labelledby="screenHeading">
+        <div class="page-heading">
+          <div id="appHeadingSlot">
+            <p class="muted page-description">বিস্তারিত, দাম, সাইজ ও স্টক এক জায়গা থেকে হালনাগাদ করুন।</p>
+          </div>
+          <button class="button primary add-button" id="addProductButton" type="button">নতুন পণ্য যোগ করুন</button>
+        </div>
+
+        <div class="catalog-tools" aria-label="পণ্য খুঁজুন ও ছাঁকুন">
+          <label class="search-field">
+            <span>খুঁজুন</span>
+            <input id="searchInput" type="search" placeholder="নাম বা SKU লিখুন" autocomplete="off">
+          </label>
+          <label class="filter-field">
+            <span>বিভাগ</span>
+            <select id="categoryFilter"><option value="">সব বিভাগ</option></select>
+          </label>
+          <label class="filter-field stock-filter">
+            <span>স্টক</span>
+            <select id="stockFilter">
+              <option value="all">সব অবস্থা</option>
+              <option value="in">স্টকে আছে</option>
+              <option value="out">স্টক শেষ</option>
+              <option value="unknown">তথ্য নেই</option>
+            </select>
+          </label>
+          <label class="filter-field sort-filter">
+            <span>সাজান</span>
+            <select id="sortFilter">
+              <option value="sku">SKU অনুযায়ী</option>
+              <option value="name">নাম অনুযায়ী</option>
+              <option value="price-asc">দাম: কম থেকে বেশি</option>
+              <option value="price-desc">দাম: বেশি থেকে কম</option>
+              <option value="updated">সর্বশেষ সম্পাদনা</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="list-summary">
+          <p id="resultRange" class="muted" aria-live="polite">ক্যাটালগ লোড হচ্ছে…</p>
+          <p id="resultStatus" class="feedback" role="status" aria-live="polite"></p>
+        </div>
+
+        <div class="table-wrap" id="tableWrap">
+          <table class="product-table">
+            <thead>
+              <tr>
+                <th scope="col" class="identity-col">পণ্য</th>
+                <th scope="col" class="category-col">বিভাগ</th>
+                <th scope="col" class="price-col">দাম</th>
+                <th scope="col" class="stock-col">স্টক</th>
+                <th scope="col" class="action-col"><span class="sr-only">কাজ</span></th>
+              </tr>
+            </thead>
+            <tbody id="productRows"></tbody>
+          </table>
+          <div class="empty-state" id="emptyState" hidden>
+            <h2>এই খোঁজে কোনো পণ্য নেই</h2>
+            <p class="muted">অন্য নাম বা SKU দিয়ে খুঁজুন, অথবা ছাঁকনি বদলান।</p>
+            <button class="button secondary" id="emptyAddButton" type="button">নতুন পণ্য যোগ করুন</button>
+          </div>
+          <div class="error-state" id="errorState" hidden>
+            <p id="errorText">পণ্য লোড করা যায়নি।</p>
+            <button class="button secondary" id="retryButton" type="button">আবার চেষ্টা করুন</button>
+          </div>
+        </div>
+
+        <nav class="pagination" id="pagination" aria-label="পণ্য তালিকার পৃষ্ঠা">
+          <p class="muted" id="pageInfo">পৃষ্ঠা লোড হচ্ছে…</p>
+          <div class="page-actions">
+            <button class="button secondary" id="previousPage" type="button" disabled>আগের</button>
+            <button class="button secondary" id="nextPage" type="button" disabled>পরের</button>
+          </div>
+        </nav>
+      </section>
+    </div>
+  </div>
+
+  <dialog class="editor-dialog" id="productDialog" aria-labelledby="editorTitle">
+    <form id="productForm" novalidate>
+      <header class="dialog-header">
+        <div>
+          <h2 id="editorTitle">নতুন পণ্য</h2>
+          <p class="muted" id="editorSubtitle">ক্যাটালগে দেখানোর তথ্য দিন।</p>
+        </div>
+        <button class="button quiet close-dialog" id="closeEditor" type="button" aria-label="সম্পাদনা বন্ধ করুন">বন্ধ</button>
+      </header>
+      <div class="form-grid">
+        <label class="form-field" for="fieldSku"><span>SKU</span><input id="fieldSku" name="sku" maxlength="64" required autocomplete="off"><small>প্রতিটি পণ্যের SKU আলাদা হতে হবে।</small></label>
+        <label class="form-field" for="fieldName"><span>পণ্যের নাম</span><input id="fieldName" name="name" maxlength="240" required></label>
+        <label class="form-field" for="fieldMainCategory"><span>প্রধান বিভাগ</span><input id="fieldMainCategory" name="mainCategory" list="mainCategories" maxlength="120" required><datalist id="mainCategories"></datalist></label>
+        <label class="form-field" for="fieldSubCategory"><span>উপবিভাগ</span><input id="fieldSubCategory" name="subCategory" list="subCategories" maxlength="120" required><datalist id="subCategories"></datalist></label>
+        <label class="form-field" for="fieldPrice"><span>দাম (৳)</span><input id="fieldPrice" name="price" type="number" min="0" max="10000000" step="0.01" inputmode="decimal" required></label>
+        <label class="form-field" for="fieldSizes"><span>সাইজ / মাপ</span><input id="fieldSizes" name="sizes" maxlength="120" placeholder="যেমন: M / L / XL"></label>
+        <label class="form-field" for="fieldStock"><span>স্টক অবস্থা</span><select id="fieldStock" name="stock"><option value="in">স্টকে আছে</option><option value="out">স্টক শেষ</option><option value="unknown">তথ্য নেই</option></select></label>
+        <label class="form-field" for="fieldImage"><span>ছবির পথ বা HTTPS লিংক</span><input id="fieldImage" name="image" maxlength="2048" placeholder="assets/products/12345.webp" autocomplete="off"><small>ছবি না থাকলে খালি রাখুন।</small></label>
+        <label class="form-field full-width" for="fieldDescription"><span>পণ্যের বিবরণ</span><textarea id="fieldDescription" name="description" rows="5" maxlength="12000" placeholder="উপাদান, নকশা বা প্রয়োজনীয় তথ্য লিখুন"></textarea></label>
+      </div>
+      <p class="form-feedback" id="formFeedback" role="status" aria-live="polite"></p>
+      <footer class="dialog-actions">
+        <button class="button quiet" id="cancelEditor" type="button">বাতিল</button>
+        <button class="button primary" id="saveProductButton" type="submit">পণ্য সংরক্ষণ</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <dialog class="confirm-dialog" id="deleteDialog" aria-labelledby="deleteTitle">
+    <form id="deleteForm">
+      <h2 id="deleteTitle">পণ্য মুছে ফেলবেন?</h2>
+      <p id="deleteCopy" class="muted"></p>
+      <p class="warning-copy">এটি পাবলিক ক্যাটালগ থেকে পণ্যটি সরিয়ে দেবে।</p>
+      <p class="form-feedback" id="deleteFeedback" role="status" aria-live="polite"></p>
+      <footer class="dialog-actions">
+        <button class="button quiet" id="cancelDelete" type="button">বাতিল</button>
+        <button class="button danger" id="confirmDeleteButton" type="submit">পণ্য মুছুন</button>
+      </footer>
+    </form>
+  </dialog>
+</body>
+</html>
